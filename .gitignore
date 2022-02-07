@@ -1,0 +1,5 @@
+./front/node_modules
+./contract/node_modules
+./front/.env
+./contract/.env
+./front/public/env.js
