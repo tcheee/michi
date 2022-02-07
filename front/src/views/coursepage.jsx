@@ -275,7 +275,7 @@ export default function Coursepage() {
       });
       if (result && result.events) {
         const id = result.events[0].args.tokenId.toNumber();
-        setUrlOS(`https://testnets.opensea.io/assets/mumbai/0xD3d73eF76847Ea0EDEdcf839A962b17aAeBfcFed/${id}`);
+        setUrlOS(`https://testnets.opensea.io/assets/mumbai/0xa6793e8add9f98c24aa2273f0d37222cb6754c14/${id}`);
         setCertificateLoading(false)
         setCertificationMinted(true)
         toast.success(
