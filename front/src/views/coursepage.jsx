@@ -40,46 +40,41 @@ export default function Coursepage() {
   const [contentDecrypted, setContentDecrypted] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!location.state) {
-      navigate('/');
-    }
-    const courseAddress = location.state.address;
-    setImage(location.state.background_image);
-    setCourseId(courseAddress);
-    setPrice(location.state.price);
-
-    async function getNFT() {
-      const result = await getNFTBought(address, courseAddress);
-      if (result.success && result.owner) {
-        setVideoHash(result.video_link);
-        setContent(result.content);
-      } else {
-        setLessonOwner(false);
-        setLoading(false);
-      }
-    }
-
-    async function getMetadata() {
-      const result = await getCourseContentNFT(courseAddress);
-      if (result.ipfs_video_url) {
-        setVideoHash(result.ipfs_video_url);
-        setContent(result.content);
-      } else {
-        setLessonOwner(false);
-        setLoading(false);
-      }
-    }
-
-    if (coursesCreated.includes(courseAddress)) {
-      setCreator(true);
-      getMetadata();
-    } else if (address) {
-      getNFT();
+  const getNFT = async (courseAddress) => {
+    const result = await getNFTBought(address, courseAddress);
+    if (result.success && result.owner) {
+      setVideoHash(result.video_link);
+      setContent(result.content);
     } else {
+      setLessonOwner(false);
       setLoading(false);
     }
+  };
 
+  const getMetadata = async (courseAddress) => {
+    const result = await getCourseContentNFT(courseAddress);
+    if (result.ipfs_video_url) {
+      setVideoHash(result.ipfs_video_url);
+      setContent(result.content);
+    } else {
+      setLessonOwner(false);
+      setLoading(false);
+    }
+  };
+
+  const verifyOwnerOrBuyer = (courseAddress) => {
+    if (coursesCreated.includes(courseAddress)) {
+      setCreator(true);
+      getMetadata(courseAddress);
+    } else if (address) {
+      getNFT(courseAddress);
+    } else {
+      console.log('heree');
+      setLoading(false);
+    }
+  };
+
+  const setUpCourseContract = (courseAddress) => {
     if (provider) {
       const courseContract = new ethers.Contract(
         courseAddress,
@@ -90,7 +85,27 @@ export default function Coursepage() {
     } else {
       console.log('Ethereum object not found');
     }
+  };
+
+  useEffect(() => {
+    if (!location.state) {
+      navigate('/');
+    }
+    const courseAddress = location.state.address;
+    setImage(location.state.background_image);
+    setCourseId(courseAddress);
+    setPrice(location.state.price);
+    verifyOwnerOrBuyer(courseAddress);
+    setUpCourseContract(courseAddress);
   }, []);
+
+  useEffect(() => {
+    console.log(courseId);
+    if (courseId) {
+      verifyOwnerOrBuyer(courseId);
+      setUpCourseContract(courseId);
+    }
+  }, [address]);
 
   useEffect(() => {
     async function accessContent() {
