@@ -43,101 +43,41 @@ export default function Coursepage() {
   const [urlOS, setUrlOS] = useState('');
   const navigate = useNavigate();
 
-  const MintCertificateButton = () => {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
-          backgroundColor: '#F87060',
-          fontWeight: 'bold',
-          mt: 2,
-          width: 250,
-          height: 45,
-          borderRadius: 30,
-          cursor: 'pointer',
-          ':hover': {
-            bgcolor: '#FEF7F0',
-            color: '#FD9D80',
-          },
-        }}
-        onClick={() => mintCertificate()}
-      >
-        Mint my certificate
-      </Box>)
-  }
-
-  const SeeMyCertificateButton = () => {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
-          backgroundColor: '#F87060',
-          fontWeight: 'bold',
-          mt: 2,
-          width: 250,
-          height: 45,
-          borderRadius: 30,
-          cursor: 'pointer',
-          ':hover': {
-            bgcolor: '#FEF7F0',
-            color: '#FD9D80',
-          },
-        }}
-        onClick={(e) => {
-          e.preventDefault();
-          window.open(urlOS, '_blank');
-        }}
-      >
-        See my certificate!
-      </Box>)
-  }
-
-  useEffect(() => {
-    if (!location.state) {
-      navigate('/');
-    }
-    const courseAddress = location.state.address;
-    setImage(location.state.background_image);
-    setCourseId(courseAddress);
-    setPrice(location.state.price);
-
-    async function getNFT() {
-      const result = await getNFTBought(address, courseAddress);
-      if (result.success && result.owner) {
-        setVideoHash(result.video_link);
-        setContent(result.content);
-      } else {
-        setLessonOwner(false);
-        setLoading(false);
-      }
-    }
-
-    async function getMetadata() {
-      const result = await getCourseContentNFT(courseAddress);
-      if (result.ipfs_video_url) {
-        setVideoHash(result.ipfs_video_url);
-        setContent(result.content);
-      } else {
-        setLessonOwner(false);
-        setLoading(false);
-      }
-    }
-
-    if (coursesCreated.includes(courseAddress)) {
-      setCreator(true);
-      getMetadata();
-    } else if (address) {
-      getNFT();
+  const getNFT = async (courseAddress) => {
+    const result = await getNFTBought(address, courseAddress);
+    if (result.success && result.owner) {
+      setVideoHash(result.video_link);
+      setContent(result.content);
     } else {
+      setLessonOwner(false);
       setLoading(false);
     }
+  };
 
+  const getMetadata = async (courseAddress) => {
+    const result = await getCourseContentNFT(courseAddress);
+    if (result.ipfs_video_url) {
+      setVideoHash(result.ipfs_video_url);
+      setContent(result.content);
+    } else {
+      setLessonOwner(false);
+      setLoading(false);
+    }
+  };
+
+  const verifyOwnerOrBuyer = (courseAddress) => {
+    if (coursesCreated.includes(courseAddress)) {
+      setCreator(true);
+      getMetadata(courseAddress);
+    } else if (address) {
+      getNFT(courseAddress);
+    } else {
+      console.log('heree');
+      setLoading(false);
+    }
+  };
+
+  const setUpCourseContract = (courseAddress) => {
     if (provider) {
       const courseContract = new ethers.Contract(
         courseAddress,
@@ -148,7 +88,27 @@ export default function Coursepage() {
     } else {
       console.log('Ethereum object not found');
     }
+  };
+
+  useEffect(() => {
+    if (!location.state) {
+      navigate('/');
+    }
+    const courseAddress = location.state.address;
+    setImage(location.state.background_image);
+    setCourseId(courseAddress);
+    setPrice(location.state.price);
+    verifyOwnerOrBuyer(courseAddress);
+    setUpCourseContract(courseAddress);
   }, []);
+
+  useEffect(() => {
+    console.log(courseId);
+    if (courseId) {
+      verifyOwnerOrBuyer(courseId);
+      setUpCourseContract(courseId);
+    }
+  }, [address]);
 
   useEffect(() => {
     async function accessContent() {
@@ -261,7 +221,7 @@ export default function Coursepage() {
 
   const mintCertificate = async () => {
     let newDate = new Date();
-    setCertificateLoading(true)
+    setCertificateLoading(true);
     try {
       const result = await mintReward(address, provider, {
         name: `Michi - ${lesson.name}`,
@@ -291,9 +251,7 @@ export default function Coursepage() {
           }
         );
         toast.info(
-          <p>
-            It can take 5 to 10 minutes to see your NFT on OpenSea!
-          </p>,
+          <p>It can take 5 to 10 minutes to see your NFT on OpenSea!</p>,
           {
             position: 'top-right',
             autoClose: 5000,
@@ -314,6 +272,63 @@ export default function Coursepage() {
         pauseOnHover: true,
       });
     }
+  };
+
+  const MintCertificateButton = () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backgroundColor: '#F87060',
+          fontWeight: 'bold',
+          mt: 2,
+          width: 250,
+          height: 45,
+          borderRadius: 30,
+          cursor: 'pointer',
+          ':hover': {
+            bgcolor: '#FEF7F0',
+            color: '#FD9D80',
+          },
+        }}
+        onClick={() => mintCertificate()}
+      >
+        Mint my certificate
+      </Box>
+    );
+  };
+
+  const SeeMyCertificateButton = () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backgroundColor: '#F87060',
+          fontWeight: 'bold',
+          mt: 2,
+          width: 250,
+          height: 45,
+          borderRadius: 30,
+          cursor: 'pointer',
+          ':hover': {
+            bgcolor: '#FEF7F0',
+            color: '#FD9D80',
+          },
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(urlOS, '_blank');
+        }}
+      >
+        See my certificate!
+      </Box>
+    );
   };
 
   return (
@@ -361,7 +376,13 @@ export default function Coursepage() {
               alignItems: 'center',
             }}
           >
-            {(certificationMinted ? <SeeMyCertificateButton /> : certificateLoading ? <ButtonLoader /> : <MintCertificateButton />)}
+            {certificationMinted ? (
+              <SeeMyCertificateButton />
+            ) : certificateLoading ? (
+              <ButtonLoader />
+            ) : (
+              <MintCertificateButton />
+            )}
           </Box>
         </Box>
       ) : (
