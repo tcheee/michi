@@ -38,6 +38,9 @@ export default function Coursepage() {
   const [creator, setCreator] = useState(false);
   const [content, setContent] = useState('');
   const [contentDecrypted, setContentDecrypted] = useState('');
+  const [certificateLoading, setCertificateLoading] = useState(false);
+  const [certificationMinted, setCertificationMinted] = useState(false);
+  const [urlOS, setUrlOS] = useState('');
   const navigate = useNavigate();
 
   const getNFT = async (courseAddress) => {
@@ -218,6 +221,7 @@ export default function Coursepage() {
 
   const mintCertificate = async () => {
     let newDate = new Date();
+    setCertificateLoading(true);
     try {
       const result = await mintReward(address, provider, {
         name: `Michi - ${lesson.name}`,
@@ -231,11 +235,25 @@ export default function Coursepage() {
       });
       if (result && result.events) {
         const id = result.events[0].args.tokenId.toNumber();
-        const url = `https://testnets.opensea.io/assets/mumbai/0xD3d73eF76847Ea0EDEdcf839A962b17aAeBfcFed/${id}`;
+        setUrlOS(
+          `https://testnets.opensea.io/assets/mumbai/0xD3d73eF76847Ea0EDEdcf839A962b17aAeBfcFed/${id}`
+        );
+        setCertificateLoading(false);
+        setCertificationMinted(true);
         toast.success(
           <p>
-            <a href={url}>Here is the link to your certificate! </a>
+            <a href={urlOS}>Here is the link to your certificate! </a>
           </p>,
+          {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+          }
+        );
+        toast.info(
+          <p>It can take 5 to 10 minutes to see your NFT on OpenSea!</p>,
           {
             position: 'top-right',
             autoClose: 5000,
@@ -256,6 +274,63 @@ export default function Coursepage() {
         pauseOnHover: true,
       });
     }
+  };
+
+  const MintCertificateButton = () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backgroundColor: '#F87060',
+          fontWeight: 'bold',
+          mt: 2,
+          width: 250,
+          height: 45,
+          borderRadius: 30,
+          cursor: 'pointer',
+          ':hover': {
+            bgcolor: '#FEF7F0',
+            color: '#FD9D80',
+          },
+        }}
+        onClick={() => mintCertificate()}
+      >
+        Mint my certificate
+      </Box>
+    );
+  };
+
+  const SeeMyCertificateButton = () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backgroundColor: '#F87060',
+          fontWeight: 'bold',
+          mt: 2,
+          width: 250,
+          height: 45,
+          borderRadius: 30,
+          cursor: 'pointer',
+          ':hover': {
+            bgcolor: '#FEF7F0',
+            color: '#FD9D80',
+          },
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(urlOS, '_blank');
+        }}
+      >
+        See my certificate!
+      </Box>
+    );
   };
 
   return (
@@ -303,28 +378,13 @@ export default function Coursepage() {
               alignItems: 'center',
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                alignItems: 'center',
-                backgroundColor: '#F87060',
-                fontWeight: 'bold',
-                mt: 2,
-                width: 250,
-                height: 45,
-                borderRadius: 30,
-                cursor: 'pointer',
-                ':hover': {
-                  bgcolor: '#FEF7F0',
-                  color: '#FD9D80',
-                },
-              }}
-              onClick={() => mintCertificate()}
-            >
-              Get my online certificate
-            </Box>
+            {certificationMinted ? (
+              <SeeMyCertificateButton />
+            ) : certificateLoading ? (
+              <ButtonLoader />
+            ) : (
+              <MintCertificateButton />
+            )}
           </Box>
         </Box>
       ) : (
