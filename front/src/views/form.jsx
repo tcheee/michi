@@ -254,7 +254,7 @@ export default function Form() {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        style={{ minHeight: '100vh' }}
+        style={{ minHeight: '10vh' }}
       >
         <TextField
           id="outlined-basic"
