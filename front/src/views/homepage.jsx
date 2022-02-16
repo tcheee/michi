@@ -1,7 +1,8 @@
 import '../App.css';
 import React, { useEffect, useState, useContext } from 'react';
 import { useAppContext } from '../context/stateContext';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Paper, ThemeProvider } from '@mui/material';
+import { createTheme } from '@material-ui/core/styles';
 import { ethers } from 'ethers';
 import course from '../utils/course.json';
 import factory from '../utils/CourseFactory.json';
@@ -14,6 +15,24 @@ export default function Homepage() {
   const [loading, setLoading] = useState(true);
   const [factoryContract, setFactoryContract] = useState(null);
   const { address, setAddress, provider } = useAppContext();
+  const styles = {
+    paperContainer: {
+      height: '70vh',
+      backgroundRepeat: "no-repeat",
+      backgroundImage: 'url("https://ipfs.io/ipfs/bafybeigwmkad7ap37rf46kh7qgnb2w7xjzjyex2x4uyy7a3hpcxd3ld7mq")',
+      height: '482px',
+      backgroundSize: 'cover',
+      borderRadius: '15px'
+    }
+  };
+  const theme = createTheme({
+    typography: {
+      fontFamily: [
+        'Righteous',
+        'cursive',
+      ].join(','),
+    },
+  });
 
   useEffect(() => {
     if (provider) {
@@ -65,16 +84,30 @@ export default function Homepage() {
   }, [provider]);
 
   return (
-    <Container className="main-container" maxWidth="false">
+    <Container className="main-container" maxWidth="xl" >
+      <Paper
+        style={styles.paperContainer}
+        justify="space-evenly"
+        sx={{ mt: '5vh' }}
+      >
+        <ThemeProvider theme={theme}>
+          <Typography sx={{ textAlign: 'right', pt: '10%', pr: '5vh', color: '#FF9479', fontSize: '60px' }}>
+            Decentralized</Typography>
+          <Typography sx={{ textAlign: 'right', pr: '5vh', color: '#FF9479', fontSize: '60px' }}>
+            Learning</Typography>
+        </ThemeProvider>
+      </Paper>
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
         }}
       >
-        <Typography sx={{ mt: '30px', fontSize: 25, fontWeight: 'bold' }}>
-          Latest courses uploaded on Michi!
-        </Typography>
+        <ThemeProvider theme={theme}>
+          <Typography sx={{ mt: '30px', fontSize: 25 }}>
+            All the courses available
+          </Typography>
+        </ThemeProvider>
       </Box>
       {loading ? (
         <Gridloader />
