@@ -44,7 +44,7 @@ export default function DisplayNFT({
                 alignItems: 'center',
               }}
             >
-              <Card sx={{ width: 310, height: 430, border: 1 }}>
+              <Card sx={{ width: 310, height: 430, border: 0 }}>
                 <CardActionArea
                   sx={{ height: 430 }}
                   onClick={() => selectCourse(lesson)}
@@ -63,7 +63,7 @@ export default function DisplayNFT({
                       sx={{
                         fontSize: 16,
                         fontWeight: 'bold',
-                        mb: 0,
+                        mb: 4,
                         height: '5vh',
                       }}
                     >
@@ -83,8 +83,8 @@ export default function DisplayNFT({
                         Created by{' '}
                         {lesson.author
                           ? lesson.author.slice(0, 5) +
-                            '...' +
-                            lesson.author.slice(-5)
+                          '...' +
+                          lesson.author.slice(-5)
                           : '0x000...00000'}
                       </Typography>
                     )}
@@ -99,8 +99,8 @@ export default function DisplayNFT({
                       {creatorInformation
                         ? null
                         : lesson.description.length > 100
-                        ? lesson.description.slice(0, 100) + '...'
-                        : lesson.description}
+                          ? lesson.description.slice(0, 100) + '...'
+                          : lesson.description}
                     </Typography>
                     {displayPrice ? (
                       <Box>
