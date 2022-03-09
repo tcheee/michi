@@ -93,7 +93,9 @@ contract Course is ERC1155 {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) public override {}
+    ) public override {
+        return;
+    }
 
     receive() external payable {}
 }

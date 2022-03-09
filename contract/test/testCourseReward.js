@@ -32,23 +32,4 @@ describe('Test for the Course Reward Contract', function () {
       "reverted with reason string 'You can not transfer this NFT.'"
     );
   });
-
-  //   it('Should be impossible to transfer to another address using safeTransferFrom', async function () {
-  //     const [owner, addr1, addr2] = await ethers.getSigners();
-
-  //     console.log(rewardContract);
-
-  //     const rewardtxn = await rewardContract.safeTransferFrom(
-  //       addr1.address,
-  //       addr2.address,
-  //       1
-  //     );
-  //     rewardtxn.wait();
-
-  //     // await expect(
-  //     //   rewardContract.safeTransferFrom(addr1.address, addr2.address, 1, 'test')
-  //     // ).to.be.revertedWith(
-  //     //   "reverted with reason string 'You can not transfer this NFT.'"
-  //     // );
-  //   });
 });
