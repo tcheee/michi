@@ -130,17 +130,30 @@ describe('Test for the Main Course Contract', function () {
     ).to.be.revertedWith('Only the ownership NFT is transferable.');
   });
 
-  // it('Should throw an error if we are trying to do use the batch transfer of the ERC1155', async function () {
-  //   const [owner, addr1] = await ethers.getSigners();
-  //   const data = '';
-  //   const txn = await courseContract.safeBatchTransferFrom(
-  //     owner.address,
-  //     addr1.address,
-  //     [1, 2, 3],
-  //     [1, 1, 1],
-  //     data
-  //   );
+  it('Should throw an error if we are trying to do use the batch transfer of the ERC1155', async function () {
+    const [, addr1, addr2] = await ethers.getSigners();
 
-  //   await txn.wait();
-  // });
+    let balanceAddr1Before = await courseContract.balanceOf(addr1.address, 0);
+    balanceAddr1Before =
+      parseFloat(ethers.utils.formatEther(balanceAddr1Before)) * 10 ** 18;
+
+    const txn = await courseContract.safeBatchTransferFrom(
+      addr1.address,
+      addr2.address,
+      [1],
+      [1],
+      []
+    );
+    await txn.wait();
+
+    let balanceAddr1 = await courseContract.balanceOf(addr1.address, 0);
+    balanceAddr1 =
+      parseFloat(ethers.utils.formatEther(balanceAddr1)) * 10 ** 18;
+    let balanceAddr2 = await courseContract.balanceOf(addr2.address, 0);
+    balanceAddr2 =
+      parseFloat(ethers.utils.formatEther(balanceAddr2)) * 10 ** 18;
+
+    expect(balanceAddr1).to.equal(balanceAddr1Before);
+    expect(balanceAddr2).to.equal(0);
+  });
 });
