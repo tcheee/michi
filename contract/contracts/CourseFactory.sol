@@ -7,18 +7,17 @@ import "./Course.sol";
 contract CourseFactory {
     address[] public allContracts;
     address owner;
+    mapping(address => address[]) public allOwnersContracts;
 
     constructor() {
         owner = msg.sender;
     }
 
-    mapping(address => address[]) public allOwnersContracts;
-
     event NewContractCreated(address _address);
 
     function createLesson(uint256 coursePrice, string memory url) public {
         Course newCourseCreated = new Course(msg.sender, coursePrice, url);
-        console.log(address(newCourseCreated));
+        // console.log(address(newCourseCreated));
         require(
             address(newCourseCreated) != address(0),
             "There was an issue while creating the course"
